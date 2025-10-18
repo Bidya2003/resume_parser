@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.env
+.venv
+venv/
+ENV/
+env/
+.ipynb_checkpoints/
+*.sqlite3
+*.db
+
+# --- Streamlit cache ---
+.streamlit/
+cache/
+.st_cache/
+.st-secrets.toml
+
+# --- Uploaded resumes (user data) ---
+Uploaded_Resumes/
+*.pdf
+
+# --- OS / IDE files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Logs ---
+*.log
+
+# --- Model / transformer cache ---
+transformers/
+~$*
