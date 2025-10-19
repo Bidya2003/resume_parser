@@ -243,7 +243,7 @@ def run():
         st.write("")
 
     st.sidebar.markdown("# Choose User")
-    activities = ["User", "Admin"]
+    activities = ["User", "Admin", "Feedback"]
     choice = st.sidebar.selectbox("Choose among the given options:", activities)
     link = '[©Developed by Bidyajani Maji](https://www.linkedin.com/in/bidyajani-maji)'
     st.sidebar.markdown(link, unsafe_allow_html=True)
@@ -547,6 +547,105 @@ def run():
                 st.error('Something went wrong while parsing your resume.')
         else:
             st.info("🔼 Please upload a PDF resume to begin.")
+            
+    # FEEDBACK SECTION
+            
+            
+    elif choice == 'Feedback':   
+
+        # ---------------------------
+        # 🕒 Timestamp Generation
+        # ---------------------------
+        ts = time.time()
+        cur_date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+        cur_time = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
+        timestamp = str(cur_date + '_' + cur_time)
+
+        st.title("💬 Feedback Section")
+        st.write("We value your opinion! Please share your experience with our Resume Analyzer.")
+
+        # ---------------------------
+        # ⚙️ Function to Insert Feedback into DB
+        # ---------------------------
+        def insertf_data(feed_name, feed_email, feed_score, comments, timestamp):
+            try:
+                DB_table_name = 'user_feedback'
+                cursor.execute(f"""
+                    CREATE TABLE IF NOT EXISTS {DB_table_name} (
+                        feed_id INT NOT NULL AUTO_INCREMENT,
+                        feed_name VARCHAR(100),
+                        feed_email VARCHAR(100),
+                        feed_score INT,
+                        comments TEXT,
+                        timestamp VARCHAR(50),
+                        PRIMARY KEY(feed_id)
+                    )
+                """)
+                insert_sql = f"""
+                    INSERT INTO {DB_table_name} 
+                    (feed_name, feed_email, feed_score, comments, timestamp)
+                    VALUES (%s, %s, %s, %s, %s)
+                """
+                rec_values = (feed_name, feed_email, feed_score, comments, timestamp)
+                cursor.execute(insert_sql, rec_values)
+                connection.commit()
+            except Exception as e:
+                st.error(f"❌ Error inserting feedback data: {e}")
+
+        # ---------------------------
+        # 🧾 Feedback Form
+        # ---------------------------
+        with st.form("my_form"):
+            st.write("### Please fill out this form")
+            feed_name = st.text_input('👤 Name')
+            feed_email = st.text_input('📧 Email')
+            feed_score = st.slider('⭐ Rate Us From 1 - 5', 1, 5)
+            comments = st.text_area('💭 Comments')
+            submitted = st.form_submit_button("Submit ✅")
+
+            if submitted:
+                if feed_name and feed_email:
+                    insertf_data(feed_name, feed_email, feed_score, comments, timestamp)
+                    st.success("🎉 Thanks! Your feedback was recorded successfully.")
+                    st.balloons()
+                else:
+                    st.warning("⚠️ Please enter your name and email before submitting.")
+
+        # ---------------------------
+        # 📊 Show Feedback Analytics
+        # ---------------------------
+        try:
+            query = 'SELECT * FROM user_feedback'
+            plotfeed_data = pd.read_sql(query, connection)
+
+            # Rating Pie Chart
+            labels = plotfeed_data.feed_score.unique()
+            values = plotfeed_data.feed_score.value_counts()
+
+            st.subheader("📈 Past User Ratings")
+            fig = px.pie(
+                values=values,
+                names=labels,
+                title="Distribution of User Ratings (1 - 5)",
+                color_discrete_sequence=px.colors.sequential.Aggrnyl
+            )
+            st.plotly_chart(fig)
+
+            # User Comments Table
+            cursor.execute('SELECT feed_name, comments FROM user_feedback')
+            plfeed_cmt_data = cursor.fetchall()
+
+            st.subheader("💬 User Comments")
+            dff = pd.DataFrame(plfeed_cmt_data, columns=['User', 'Comment'])
+            st.dataframe(dff, width=1000)
+
+        except Exception as e:
+            st.info("No feedback data available yet. Be the first to give feedback! 😊")
+
+            
+            
+            
+            
     else:  # Admin Side
         st.success('Welcome to Admin Side')
         ad_user = st.text_input("Username")
