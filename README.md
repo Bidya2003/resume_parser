@@ -3,7 +3,7 @@
 ![AI-Resume-Analyzer](https://github.com/Bidya2003/resume_parser/blob/main/screenshots/demo.png)
 
 <div align="center">
-  <h1>🌴 AI RESUME ANALYZER 🌴</h1>
+  <h1> AI RESUME Evaluation System </h1>
   <p>A Tool for Resume Analysis, Predictions and Recommendations</p>
   <!-- Badges -->
   <p>
