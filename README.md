@@ -209,6 +209,8 @@ If ``GeocoderUnavailable`` error comes up then just check your internet connecti
 * [x] Fetch more details from users resume.
 * [ ] View individual user details.
 
+## Preview
+
 ### Client Side
 
 **Main Screen**
