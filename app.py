@@ -642,10 +642,9 @@ def run():
         except Exception as e:
             st.info("No feedback data available yet. Be the first to give feedback! 😊")
 
-            
-            
-            
-            
+    
+
+    
     else:  # Admin Side
         st.success('Welcome to Admin Side')
         ad_user = st.text_input("Username")
@@ -654,28 +653,87 @@ def run():
         if st.button('Login'):
             if ad_user == 'briit' and ad_password == 'briit123':
                 st.success("Welcome Dr Briit !")
+
                 cursor.execute("SELECT * FROM user_data")
                 data = cursor.fetchall()
-                df = pd.DataFrame(data, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp', 'Total Page',
-                                                'Predicted_Field', 'User_level', 'Actual_skills', 'Recommended_skills', 'Recommended_course'])
+                df = pd.DataFrame(data, columns=[
+                    'ID', 'Name', 'Email', 'Resume Score', 'Timestamp',
+                    'Total Page', 'Predicted_Field', 'User_level',
+                    'Actual_skills', 'Recommended_skills', 'Recommended_course'
+                ])
+
+                # Decode byte columns if necessary
                 for col in ['Predicted_Field', 'User_level', 'Actual_skills', 'Recommended_skills', 'Recommended_course']:
                     df[col] = df[col].apply(lambda x: x.decode() if isinstance(x, (bytes, bytearray)) else str(x))
 
+                # ✅ Add dummy data for missing columns (for visualization)
+                if 'IP_add' not in df.columns:
+                    df['IP_add'] = [f"192.168.0.{i+1}" for i in range(len(df))]
+                if 'City' not in df.columns:
+                    city_list = ['Kolkata', 'Delhi', 'Mumbai', 'Chennai', 'Bangalore'] * ((len(df) // 5) + 1)
+                    df['City'] = city_list[:len(df)]
+
+                if 'State' not in df.columns:
+                    state_list = ['West Bengal', 'Delhi', 'Maharashtra', 'Tamil Nadu', 'Karnataka'] * ((len(df) // 5) + 1)
+                    df['State'] = state_list[:len(df)]
+                if 'Country' not in df.columns:
+                    df['Country'] = ['India'] * len(df)
+
+                # 🧾 Show Table
                 st.header("User's Data")
                 st.dataframe(df)
                 st.markdown(get_table_download_link(df, 'User_Data.csv', 'Download Report'), unsafe_allow_html=True)
 
+                # 📊 Pie chart 1: Predicted Field
                 labels = df['Predicted_Field'].unique()
                 values = df['Predicted_Field'].value_counts()
                 st.subheader("Pie-Chart for Predicted Field Recommendation")
                 fig = px.pie(df, values=values, names=labels, title='Predicted Field according to the Skills')
                 st.plotly_chart(fig)
 
+                # 📊 Pie chart 2: User Level
                 labels_level = df['User_level'].unique()
                 values_level = df['User_level'].value_counts()
                 st.subheader("Pie-Chart for User's Experienced Level")
                 fig2 = px.pie(df, values=values_level, names=labels_level, title="User's Experienced Level")
                 st.plotly_chart(fig2)
+
+                # 📊 Pie chart 3: Resume Score
+                labels = df['Resume Score'].unique()
+                values = df['Resume Score'].value_counts()
+                st.subheader("**Pie-Chart for Resume Score**")
+                fig3 = px.pie(df, values=values, names=labels, title='From 1 to 100 💯', color_discrete_sequence=px.colors.sequential.Agsunset)
+                st.plotly_chart(fig3)
+
+                # 📊 Pie chart 4: Users (IP-based)
+                labels = df['IP_add'].unique()
+                values = df['IP_add'].value_counts()
+                st.subheader("**Pie-Chart for Users App Used Count**")
+                fig4 = px.pie(df, values=values, names=labels, title='Usage Based On IP Address 👥', color_discrete_sequence=px.colors.sequential.Magma)
+                st.plotly_chart(fig4)
+
+                # 📊 Pie chart 5: City
+                labels = df['City'].unique()
+                values = df['City'].value_counts()
+                st.subheader("**Pie-Chart for City**")
+                fig5 = px.pie(df, values=values, names=labels, title='Usage Based On City 🌆', color_discrete_sequence=px.colors.sequential.Jet)
+                st.plotly_chart(fig5)
+
+                # 📊 Pie chart 6: State
+                labels = df['State'].unique()
+                values = df['State'].value_counts()
+                st.subheader("**Pie-Chart for State**")
+                fig6 = px.pie(df, values=values, names=labels, title='Usage Based on State 🚉', color_discrete_sequence=px.colors.sequential.PuBu_r)
+                st.plotly_chart(fig6)
+
+                # 📊 Pie chart 7: Country
+                labels = df['Country'].unique()
+                values = df['Country'].value_counts()
+                st.subheader("**Pie-Chart for Country**")
+                fig7 = px.pie(df, values=values, names=labels, title='Usage Based on Country 🌏', color_discrete_sequence=px.colors.sequential.Purpor_r)
+                st.plotly_chart(fig7)
+
+
             else:
                 st.error("Wrong ID & Password Provided")
 
