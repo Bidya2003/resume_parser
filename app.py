@@ -54,12 +54,6 @@ os.makedirs('./Uploaded_Resumes', exist_ok=True)
 # # Download stopwords (for pyresparser)
 # nltk.download('stopwords')
 
-# # Streamlit Page Config
-# st.set_page_config(
-#     page_title="AI Resume Evaluation System",
-#     layout="wide",
-#     page_icon="🟢"
-# )
 
 # === Dark Glassmorphic CSS with Emerald-Teal Accent ===
 st.markdown(
