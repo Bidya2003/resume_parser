@@ -14,10 +14,10 @@ nltk.download('punkt')
 
 from PIL import Image
 from pyresparser import ResumeParser
-from pdfminer3.layout import LAParams
-from pdfminer3.pdfpage import PDFPage
-from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer3.converter import TextConverter
+//from pdfminer3.layout import LAParams
+//from pdfminer3.pdfpage import PDFPage
+//from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
+//from pdfminer3.converter import TextConverter
 from streamlit_tags import st_tags
 import pymysql
 import nltk
