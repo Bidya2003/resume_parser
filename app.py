@@ -1,6 +1,12 @@
 
 import os
 import streamlit as st
+
+st.set_page_config(
+    page_title="AI Resume Evaluation System",
+    layout="wide"
+    page_icon="🟢"
+)
 import pandas as pd
 import base64
 import time
@@ -9,8 +15,15 @@ import random
 import io
 import re
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
 from PIL import Image
 from pyresparser import ResumeParser
@@ -38,15 +51,15 @@ from courses import (
 # Ensure upload folder exists
 os.makedirs('./Uploaded_Resumes', exist_ok=True)
 
-# Download stopwords (for pyresparser)
-nltk.download('stopwords')
+# # Download stopwords (for pyresparser)
+# nltk.download('stopwords')
 
-# Streamlit Page Config
-st.set_page_config(
-    page_title="AI Resume Evaluation System",
-    layout="wide",
-    page_icon="🟢"
-)
+# # Streamlit Page Config
+# st.set_page_config(
+#     page_title="AI Resume Evaluation System",
+#     layout="wide",
+#     page_icon="🟢"
+# )
 
 # === Dark Glassmorphic CSS with Emerald-Teal Accent ===
 st.markdown(
