@@ -248,11 +248,6 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
         cursor.execute(insert_sql, rec_values)
         connection.commit()
 
-# Streamlit Page Config (kept to original)
-st.set_page_config(
-    page_title="AI Resume Evaluation System",
-    layout="wide"
-)
 
 def run():
     # Top title area centered
