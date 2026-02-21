@@ -8,6 +8,9 @@ import datetime
 import random
 import io
 import re
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 
 from PIL import Image
 from pyresparser import ResumeParser
