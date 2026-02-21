@@ -15,7 +15,7 @@
   
   <!--links-->
   <h4>
-    <a href="#preview-">View Demo</a>
+    <a href="#preview-https://resumeparser-e52qkc7qgewyqir6jpfb5u.streamlit.app/">View Demo</a>
     <span> · </span>
     <a href="#setup--installation-">Installation</a>
     <span> · </span>
