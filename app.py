@@ -220,16 +220,26 @@ try:
     )
     cursor = connection.cursor()
     print("✅ Database connected successfully")
+# except Exception as e:
+#     st.error(f"Database connection failed: {e}")
+#     st.stop()
+
 except Exception as e:
-    st.error(f"Database connection failed: {e}")
-    st.stop()
+    st.warning("⚠ Database not available. Running in Cloud Mode (No DB).")
+    connection = None
+    cursor = None
+
 
 def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills, recommended_skills, courses):
+    if not cursor:
+        st.warning("Feedback storage disabled (No DB Mode)")
+        return
     DB_table_name = 'user_data'
     insert_sql = f"INSERT INTO {DB_table_name} VALUES (0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     rec_values = (name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills, courses)
-    cursor.execute(insert_sql, rec_values)
-    connection.commit()
+    if cursor:
+        cursor.execute(insert_sql, rec_values)
+        connection.commit()
 
 # Streamlit Page Config (kept to original)
 st.set_page_config(
@@ -252,24 +262,25 @@ def run():
     st.sidebar.markdown(link, unsafe_allow_html=True)
 
     # Ensure DB and table exist (kept same as before)
-    cursor.execute("CREATE DATABASE IF NOT EXISTS CV;")
-    table_sql = """
-        CREATE TABLE IF NOT EXISTS user_data (
-            ID INT NOT NULL AUTO_INCREMENT,
-            Name varchar(500) NOT NULL,
-            Email_ID VARCHAR(500) NOT NULL,
-            resume_score VARCHAR(8) NOT NULL,
-            Timestamp VARCHAR(50) NOT NULL,
-            Page_no VARCHAR(5) NOT NULL,
-            Predicted_Field BLOB NOT NULL,
-            User_level BLOB NOT NULL,
-            Actual_skills BLOB NOT NULL,
-            Recommended_skills BLOB NOT NULL,
-            Recommended_courses BLOB NOT NULL,
-            PRIMARY KEY (ID)
-        );
-    """
-    cursor.execute(table_sql)
+    if cursor:
+        cursor.execute("CREATE DATABASE IF NOT EXISTS CV;")
+        table_sql = """
+            CREATE TABLE IF NOT EXISTS user_data (
+                ID INT NOT NULL AUTO_INCREMENT,
+                Name varchar(500) NOT NULL,
+                Email_ID VARCHAR(500) NOT NULL,
+                resume_score VARCHAR(8) NOT NULL,
+                Timestamp VARCHAR(50) NOT NULL,
+                Page_no VARCHAR(5) NOT NULL,
+                Predicted_Field BLOB NOT NULL,
+                User_level BLOB NOT NULL,
+                Actual_skills BLOB NOT NULL,
+                Recommended_skills BLOB NOT NULL,
+                Recommended_courses BLOB NOT NULL,
+                PRIMARY KEY (ID)
+            );
+        """
+        cursor.execute(table_sql)
 
     if choice == "User":
         st.markdown('<div class="card"><strong>Upload your resume, and get smart recommendations</strong></div>', unsafe_allow_html=True)
@@ -657,7 +668,12 @@ def run():
             if ad_user == 'briit' and ad_password == 'briit123':
                 st.success("Welcome Dr Briit !")
 
+                if not cursor:
+                    st.error("Admin panel unavailable in Cloud Mode (No Database)")
+                    return
+
                 cursor.execute("SELECT * FROM user_data")
+
                 data = cursor.fetchall()
                 df = pd.DataFrame(data, columns=[
                     'ID', 'Name', 'Email', 'Resume Score', 'Timestamp',
