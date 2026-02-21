@@ -4,7 +4,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="AI Resume Evaluation System",
-    layout="wide"
+    layout="wide",
     page_icon="🟢"
 )
 import pandas as pd
